@@ -26,5 +26,36 @@ function formSesion(){
 }
 
 function sesValida(){
-	location.href = 'view/inicio.php';
+	var vaccion = "VALIDA";
+	var vus = $('#ses_User').val();
+	var vco = $('#ses_Pass').val();
+	var missinginfo = '';
+
+	if ((/^\s+$/.test(vus)) || (vus.length == 0)){
+	    missinginfo += "<br> El campo <b>USUARIO</b> es requerido";
+	}
+	if ((/^\s+$/.test(vco)) || (vco.length == 0)){
+	    missinginfo += "<br> El campo <b>CONTRASEÑA</b> es requerido";
+	} 
+
+	if(missinginfo==''){
+		jQuery.ajax({
+			url: 'controller/cHome.php',
+			type: 'POST',
+			dataType: 'json',
+			data: {accion:vaccion,us:vus,co:vco}
+		}).done(function(respuesta){  
+			if(respuesta.accion==1){
+					location.href = 'controller/cInicio.php';
+			}else{
+				Swal.fire("ERROR",'Los datos de acceso no son válidos',"error");
+			}
+		}).fail(function(respuesta){
+			console.log(respuesta);   
+		}).always(function(){
+			console.log("Done");
+		});	
+	}else{
+		Swal.fire("ERROR",missinginfo,"error");
+	}
 }
